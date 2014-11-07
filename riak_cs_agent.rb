@@ -6,15 +6,15 @@ require 'json'
 require 'base64'
 require 'hmac-sha1'
 require 'rest-client'
+require 'rinterface'
 
 module RiakCSAgent
 
   class Metric
 
-    attr_accessor :key, :name, :unit, :arr_index, :processor
+    attr_reader :key, :name, :unit, :arr_index
 
     def initialize(key, name, unit, arr_index)
-      @processor = NewRelic::Processor::EpochCounter.new
       @key = key
       @name = name
       @unit = unit
@@ -24,11 +24,18 @@ module RiakCSAgent
   end
 
   class Agent < NewRelic::Plugin::Agent::Base
-    agent_guid 'com.basho.riak_cs_agent'
-    agent_version '0.1.0'
-    agent_config_options :host, :port, :access_id, :secret_key
-    agent_human_labels('RiakCS') { "#{host}:#{port}" }
+    agent_guid 'com.tier3.riak_cs_agent'
+    agent_version '0.2.0'
+    agent_config_options :host, :port, :access_id, :secret_key, :cookie
+    agent_human_labels('RiakCS-T3') { "#{host}:#{port}" }
 
+    def node
+      'riak-cs'
+    end
+
+    def cookie
+      '#{cookie}'
+    end
     def setup_metrics
 
       @metrics = [
@@ -128,11 +135,19 @@ module RiakCSAgent
     def poll_cycle
       stats = JSON.parse(riak_cs_get("http://#{host}:#{port}","/riak-cs/stats",access_id,secret_key))
 
-      for metric in @metrics
-        report_metric metric.name,
-                      metric.unit,
-                      metric.processor.process(stats[metric.key][metric.arr_index])
+      @metrics.each do |metric|
+        report_metric(metric.name, metric.unit, stats[metric.key][metric.arr_index])
       end
+
+      rpc_node = Erlang::Node.new node, cookie
+      request_pool_stats = rpc_node.poolboy.status :request_pool
+      bucket_list_pool_stats = rpc_node.poolboy.status :bucket_list_pool
+      pbc_pool_master_stats = rpc_node.poolboy.status :pbc_pool_master
+
+      puts pbc_pool_master_stats
+      report_metric 'PoolBoy/RequestPoolOutOf128', 'Workers', request_pool_stats[3]
+      report_metric 'PoolBoy/BucketListPoolOutOf16', 'Workers', bucket_list_pool_stats[3]
+      report_metric 'PoolBoy/MasterPBCPoolOutOf144', 'Workers', pbc_pool_master_stats[3]
 
     end
 
@@ -143,7 +158,6 @@ module RiakCSAgent
       hash_code = Base64.encode64((HMAC::SHA1.new(secret_key) << auth_string).digest).strip
       auth_header = "AWS #{access_id}:#{hash_code}"
 
-      RestClient.proxy = ENV["HTTP_PROXY"] unless ENV['HTTP_PROXY'].nil?
       data = RestClient.get "#{cs_host}#{path}", {
           'Authorization' => auth_header,
           'Content-Type' => 'application/json',

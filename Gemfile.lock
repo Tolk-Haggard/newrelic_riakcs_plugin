@@ -1,0 +1,28 @@
+GIT
+  remote: git://github.com/asynchrony/rinterface.git
+  revision: 35a11cc07729ac977adb0292930940264caa3b11
+  specs:
+    rinterface (0.0.3.asynchrony)
+      eventmachine
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    eventmachine (1.0.3)
+    json (1.8.1)
+    mime-types (2.1)
+    newrelic_plugin (1.3.1)
+      json
+    rest-client (1.6.7)
+      mime-types (>= 1.16)
+    ruby-hmac (0.4.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  json
+  newrelic_plugin
+  rest-client
+  rinterface!
+  ruby-hmac

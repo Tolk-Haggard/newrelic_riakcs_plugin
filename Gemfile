@@ -1,6 +1,6 @@
-source "https://rubygems.org"
-
-gem "newrelic_plugin", "~> 1.3.1"
+source "http://rubygems.org"
+gem 'newrelic_plugin'
 gem 'rest-client'
 gem 'json'
 gem 'ruby-hmac'
+gem 'rinterface', github: 'asynchrony/rinterface'

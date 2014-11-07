@@ -16,18 +16,18 @@ newrelic:
   #
   # Update with your New Relic account license key:
   #
-  license_key: 'put_your_license_key_here'
+  license_key: 'LICENSE_KEY'
   #
   # Set to '1' for verbose output, remove for normal output.
   # All output goes to stdout/stderr.
   #
-  verbose: 1
+  verbose: 0
 #
 # Agent Configuration:
 #
 agents:
   riak_cs:
-    host: 's3.amazonaws.com'
-    port: 80
-    access_id: 'put_your_cs_access_id_here'
-    secret_key: 'put_your_cs_secret_key_here'
+    host: HOSTNAME
+    port: 8080
+    access_id: 'ACCESS_KEY'
+    secret_key: 'ACCESS_SECRET'
