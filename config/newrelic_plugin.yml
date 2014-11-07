@@ -31,3 +31,4 @@ agents:
     port: 8080
     access_id: 'ACCESS_KEY'
     secret_key: 'ACCESS_SECRET'
+    cookie: 'ERLANG_COOKIE'
