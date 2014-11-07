@@ -29,6 +29,6 @@ agents:
   riak_cs:
     host: HOSTNAME
     port: 8080
-    access_id: 'ACCESS_KEY'
-    secret_key: 'ACCESS_SECRET'
+    access_id: 'ADMIN_KEY'
+    secret_key: 'ADMIN_SECRET'
     cookie: 'ERLANG_COOKIE'
