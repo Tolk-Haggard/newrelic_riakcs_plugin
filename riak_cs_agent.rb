@@ -33,9 +33,6 @@ module RiakCSAgent
       'riak-cs'
     end
 
-    def cookie
-      '#{cookie}'
-    end
     def setup_metrics
 
       @metrics = [
